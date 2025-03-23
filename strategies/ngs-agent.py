@@ -1,5 +1,6 @@
 # Databricks notebook source
 import json
+import time
 from collections.abc import Generator
 from typing import Any, cast
 
@@ -22,6 +23,21 @@ class BasicParams(BaseModel):
 class NgsAgentAgentStrategy(AgentStrategy):
     def _invoke(self, parameters: dict[str, Any]) -> Generator[AgentInvokeMessage]:
         params = BasicParams(**parameters)
+        function_call_round_log = self.create_log_message(
+            label="Function Call Round1 ",
+            data={},
+            metadata={},
+        )
+        yield function_call_round_log
+        model_started_at = time.perf_counter()
+        model_log = self.create_log_message(
+            label=f"{params.model.model} Thought",
+            data={},
+            metadata={"start_at": model_started_at, "provider": params.model.provider},
+            status=ToolInvokeMessage.LogMessage.LogStatus.START,
+            parent=function_call_round_log,
+        )
+        yield model_log
         chunks: Generator[LLMResultChunk, None, None] | LLMResult = (
             self.session.model.llm.invoke(
                 model_config=LLMModelConfig(**params.model.model_dump(mode="json")),
@@ -41,7 +57,8 @@ class NgsAgentAgentStrategy(AgentStrategy):
         tool_instances = (
             {tool.identity.name: tool for tool in params.tools} if params.tools else {}
         )
-
+        tool_call_names = ""
+        tool_call_inputs = ""
         for chunk in chunks:
             # check if there is any tool call
             if self.check_tool_calls(chunk):
@@ -71,6 +88,20 @@ class NgsAgentAgentStrategy(AgentStrategy):
                 # usage of the model
                 usage = chunk.delta.usage
 
+        yield self.finish_log_message(
+            log=model_log,
+            data={
+                "output": response,
+                "tool_name": tool_call_names,
+                "tool_input": tool_call_inputs,
+            },
+            metadata={
+                "started_at": model_started_at,
+                "finished_at": time.perf_counter(),
+                "elapsed_time": time.perf_counter() - model_started_at,
+                "provider": params.model.provider,
+            },
+        )
         yield self.create_text_message(
             text=f"{response or json.dumps(tool_calls, ensure_ascii=False)}\n"
         )
