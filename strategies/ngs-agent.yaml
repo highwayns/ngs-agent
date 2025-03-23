@@ -6,21 +6,38 @@ identity:
 description:
   en_US: NgsAgent
 parameters:
-  - name: model
-    type: model-selector
-    scope: tool-call&llm
+  - name: model # the name of the model parameter
+    type: model-selector # model-type
+    scope: tool-call&llm # the scope of the parameter
     required: true
     label:
       en_US: Model
       zh_Hans: 模型
       pt_BR: Model
-  - name: tools
-    type: array[tools]
+  - name: tools # the name of the tools parameter
+    type: array[tools] # the type of tool parameter
     required: true
     label:
       en_US: Tools list
       zh_Hans: 工具列表
       pt_BR: Tools list
+  - name: query # the name of the query parameter
+    type: string # the type of query parameter
+    required: true
+    label:
+      en_US: Query
+      zh_Hans: 查询
+      pt_BR: Query
+  - name: maximum_iterations
+    type: number
+    required: false
+    default: 5
+    label:
+      en_US: Maxium Iterations
+      zh_Hans: 最大迭代次数
+      pt_BR: Maxium Iterations
+    max: 50 # if you set the max and min value, the display of the parameter will be a slider
+    min: 1
 extra:
   python:
     source: strategies/ngs-agent.py
