@@ -1,0 +1,43 @@
+version: 0.0.1
+type: plugin
+author: highwayns
+name: ngs-agent
+label:
+  en_US: ngs-agent
+  ja_JP: ngs-agent
+  zh_Hans: ngs-agent
+  pt_BR: ngs-agent
+description:
+  en_US: agent for ngs
+  ja_JP: agent for ngs
+  zh_Hans: agent for ngs
+  pt_BR: agent for ngs
+icon: icon.svg
+resource:
+  memory: 268435456
+  permission:
+    tool:
+      enabled: true
+    model:
+      enabled: true
+      llm: true
+      text_embedding: false
+      rerank: false
+      tts: false
+      speech2text: false
+      moderation: false
+plugins:
+  agent_strategies:
+    - provider/ngs-agent.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+created_at: 2025-03-23T15:24:58.498410303+09:00
+privacy: PRIVACY.md
+verified: false

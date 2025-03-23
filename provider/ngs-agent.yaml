@@ -1,0 +1,13 @@
+identity:
+  author: highwayns
+  name: ngs-agent
+  label:
+    en_US: NgsAgent
+  description:
+    en_US: NgsAgent
+  icon: icon.svg
+strategies:
+  - strategies/ngs-agent.yaml
+extra:
+  python:
+    source: provider/ngs-agent.py

@@ -1,0 +1,26 @@
+identity:
+  name: ngs-agent
+  author: highwayns
+  label:
+    en_US: NgsAgent
+description:
+  en_US: NgsAgent
+parameters:
+  - name: model
+    type: model-selector
+    scope: tool-call&llm
+    required: true
+    label:
+      en_US: Model
+      zh_Hans: 模型
+      pt_BR: Model
+  - name: tools
+    type: array[tools]
+    required: true
+    label:
+      en_US: Tools list
+      zh_Hans: 工具列表
+      pt_BR: Tools list
+extra:
+  python:
+    source: strategies/ngs-agent.py
